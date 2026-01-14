@@ -1,0 +1,23 @@
+# VK6 원본 파일
+*.vk6
+
+# 추출된 데이터
+extracted/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 기타 데이터 파일
+*.csv
+*.cag
+*.pr7
+*.tiff
+*.png
+
+# IDE
+.vscode/
+.idea/
