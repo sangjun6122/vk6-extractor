@@ -160,8 +160,8 @@ def parse_vk6(filepath):
 
 def save_height_tiff(height_data, output_path, z_scale=1.0):
     """Save height data as 32-bit float TIFF (Halcon compatible)."""
-    # Convert nm to um (convenient for Halcon)
-    height_float = height_data.astype(np.float32) / 1000.0  # nm to um
+    # Convert 0.1nm to um (raw data is in 0.1nm units)
+    height_float = height_data.astype(np.float32) / 10000.0  # 0.1nm to um
 
     # Save as 32-bit float TIFF using PIL
     img = Image.fromarray(height_float, mode='F')
@@ -232,7 +232,7 @@ def process_vk6_file(vk6_path, output_dir=None):
         if result['height_data'] is not None:
             height_path = os.path.join(output_dir, f"{basename}_height.tiff")
             save_height_tiff(result['height_data'], height_path, result['z_scale'])
-            print(f"  32-bit height map: {result['height_width']}x{result['height_height']}, {result['height_data'].min()/1000:.2f}~{result['height_data'].max()/1000:.2f} um")
+            print(f"  32-bit height map: {result['height_width']}x{result['height_height']}, {result['height_data'].min()/10000:.2f}~{result['height_data'].max()/10000:.2f} um")
 
         # Save thumbnail images
         for i, thumb in enumerate(result['thumbnails']):
@@ -285,7 +285,7 @@ def process_vk6_file_organized(vk6_path, base_output_dir):
         if result['height_data'] is not None:
             height_path = os.path.join(base_output_dir, 'height', f"{basename}_height.tiff")
             save_height_tiff(result['height_data'], height_path, result['z_scale'])
-            print(f"  32-bit height map: {result['height_width']}x{result['height_height']}, {result['height_data'].min()/1000:.2f}~{result['height_data'].max()/1000:.2f} um")
+            print(f"  32-bit height map: {result['height_width']}x{result['height_height']}, {result['height_data'].min()/10000:.2f}~{result['height_data'].max()/10000:.2f} um")
 
         # Save thumbnail images
         for i, thumb in enumerate(result['thumbnails']):
