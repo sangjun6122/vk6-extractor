@@ -192,6 +192,50 @@ def save_measure_info(info, output_path):
         f.write(f"Z Pitch: {info['z_pitch_nm']} nm ({info['z_pitch_nm']/1000:.3f} um)\n")
 
 
+def save_height_csv(height_data, output_path, info, basename):
+    """Save height data as CSV with metadata header (Keyence compatible format)."""
+    # Convert 0.1nm to um
+    height_um = height_data.astype(np.float64) / 10000.0
+
+    # Calculate min/max (excluding invalid values where raw data is 0)
+    valid_mask = height_data != 0
+    if np.any(valid_mask):
+        min_val = height_um[valid_mask].min()
+        max_val = height_um[valid_mask].max()
+    else:
+        min_val = 0.0
+        max_val = 0.0
+
+    height_h, height_w = height_data.shape
+
+    with open(output_path, 'w', encoding='utf-8', newline='') as f:
+        # Write metadata header
+        f.write(f'"Measured date","{info["year"]}-{info["month"]:02d}-{info["day"]:02d} {info["hour"]:02d}:{info["minute"]:02d}:{info["second"]:02d}"\n')
+        f.write('"Model","VK-X3000 Series"\n')
+        f.write('"Data type\\n","ImageDataCsv"\n')
+        f.write('"File version","1000"\n')
+        f.write(f'"Measurement data name","{basename}"\n')
+        f.write('"Resolution","Standard"\n')
+        f.write('"Measurement Mode","Surface profile"\n')
+        f.write('"Scan Mode","Laser confocal"\n')
+        f.write(f'"Objective Lens Power","{int(info["objective_mag"])}"\n')
+        f.write(f'"XY Calibration","{info["x_pitch_nm"]/1000:.3f}","nm"\n')
+        f.write('"Output image data","Height"\n')
+        f.write(f'"Horizontal","{height_w}"\n')
+        f.write(f'"Vertical","{height_h}"\n')
+        f.write(f'"Minimum value","{min_val:.3f}"\n')
+        f.write(f'"Maximum value","{max_val:.3f}"\n')
+        f.write('"Unit","um"\n')
+        f.write('"Reference data name",""\n')
+        f.write('\n')
+        f.write('"Height"\n')
+
+        # Write height data row by row
+        for row in height_um:
+            row_str = ','.join(f'"{v:.3f}"' for v in row)
+            f.write(row_str + '\n')
+
+
 def process_vk6_file(vk6_path, output_dir=None):
     """Process VK6 file - extract all data (skip if not available)."""
     if output_dir is None:
@@ -233,6 +277,11 @@ def process_vk6_file(vk6_path, output_dir=None):
             height_path = os.path.join(output_dir, f"{basename}_height.tiff")
             save_height_tiff(result['height_data'], height_path, result['z_scale'])
             print(f"  32-bit height map: {result['height_width']}x{result['height_height']}, {result['height_data'].min()/10000:.2f}~{result['height_data'].max()/10000:.2f} um")
+
+            # Save CSV format
+            csv_path = os.path.join(output_dir, f"{basename}_height.csv")
+            save_height_csv(result['height_data'], csv_path, info, basename)
+            print(f"  CSV height map: {csv_path}")
 
         # Save thumbnail images
         for i, thumb in enumerate(result['thumbnails']):
@@ -287,6 +336,11 @@ def process_vk6_file_organized(vk6_path, base_output_dir):
             save_height_tiff(result['height_data'], height_path, result['z_scale'])
             print(f"  32-bit height map: {result['height_width']}x{result['height_height']}, {result['height_data'].min()/10000:.2f}~{result['height_data'].max()/10000:.2f} um")
 
+            # Save CSV format
+            csv_path = os.path.join(base_output_dir, 'height_csv', f"{basename}_height.csv")
+            save_height_csv(result['height_data'], csv_path, info, basename)
+            print(f"  CSV height map: {csv_path}")
+
         # Save thumbnail images
         for i, thumb in enumerate(result['thumbnails']):
             thumb_path = os.path.join(base_output_dir, 'thumbnail', f"{basename}_thumb{i+1}.png")
@@ -315,7 +369,7 @@ def main():
 
         # Create output folders
         output_dir = os.path.join(vk6_dir, 'extracted')
-        for subdir in ['height', 'height16', 'laser', 'optical', 'thumbnail', 'info']:
+        for subdir in ['height', 'height16', 'height_csv', 'laser', 'optical', 'thumbnail', 'info']:
             os.makedirs(os.path.join(output_dir, subdir), exist_ok=True)
 
         print(f"Processing {len(vk6_files)} VK6 files.")

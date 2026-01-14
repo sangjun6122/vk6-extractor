@@ -28,8 +28,9 @@ python extract_vk6.py
 Outputs are organized into the `extracted/` folder:
 ```
 extracted/
-├── height/      # 32-bit height maps (um units)
-├── height16/    # 16-bit height maps
+├── height/      # 32-bit height maps (um units, TIFF)
+├── height16/    # 16-bit height maps (TIFF)
+├── height_csv/  # Height maps with metadata (CSV, Keyence format)
 ├── laser/       # Laser images
 ├── optical/     # Optical images
 ├── thumbnail/   # Thumbnail images
@@ -50,6 +51,7 @@ Saves as `sample_height.tiff`, `sample_laser.png`, etc. in the current folder.
 |------|-------------|--------|
 | `*_height.tiff` | 32-bit height map (um units) | 32-bit float TIFF |
 | `*_height16.tiff` | 16-bit height map | 16-bit TIFF |
+| `*_height.csv` | Height map with metadata | CSV (Keyence format) |
 | `*_laser.png` | Laser image | RGB PNG |
 | `*_optical.png` | Optical image | RGB PNG |
 | `*_thumb*.png` | Thumbnail images | RGB PNG |
