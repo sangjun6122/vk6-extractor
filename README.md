@@ -1,83 +1,83 @@
 # VK6 Extractor
 
-Keyence VK6 레이저 현미경 파일에서 높이맵과 이미지를 추출하는 Python 도구입니다.
+A Python tool for extracting height maps and images from Keyence VK6 laser microscope files.
 
-## 기능
+## Features
 
-- **32비트 높이맵** 추출 (TIFF, Halcon 호환)
-- **16비트 높이맵** 추출 (TIFF)
-- **레이저 이미지** 추출 (PNG)
-- **광학 이미지** 추출 (PNG)
-- **썸네일 이미지** 추출 (PNG)
-- **측정 정보** 추출 (TXT)
+- **32-bit height map** extraction (TIFF, Halcon compatible)
+- **16-bit height map** extraction (TIFF)
+- **Laser image** extraction (PNG)
+- **Optical image** extraction (PNG)
+- **Thumbnail image** extraction (PNG)
+- **Measurement info** extraction (TXT)
 
-## 요구사항
+## Requirements
 
 ```bash
 pip install numpy pillow
 ```
 
-## 사용법
+## Usage
 
-### 모든 VK6 파일 일괄 추출
+### Batch extraction of all VK6 files
 
 ```bash
 python extract_vk6.py
 ```
 
-`extracted/` 폴더에 다음과 같이 정리됩니다:
+Outputs are organized into the `extracted/` folder:
 ```
 extracted/
-├── height/      # 32비트 높이맵 (um 단위)
-├── height16/    # 16비트 높이맵
-├── laser/       # 레이저 이미지
-├── optical/     # 광학 이미지
-├── thumbnail/   # 썸네일 이미지
-└── info/        # 측정 정보
+├── height/      # 32-bit height maps (um units)
+├── height16/    # 16-bit height maps
+├── laser/       # Laser images
+├── optical/     # Optical images
+├── thumbnail/   # Thumbnail images
+└── info/        # Measurement info
 ```
 
-### 특정 파일만 추출
+### Extract specific file
 
 ```bash
 python extract_vk6.py sample.vk6
 ```
 
-현재 폴더에 `sample_height.tiff`, `sample_laser.png` 등으로 저장됩니다.
+Saves as `sample_height.tiff`, `sample_laser.png`, etc. in the current folder.
 
-## 출력 포맷
+## Output Format
 
-| 파일 | 설명 | 포맷 |
-|------|------|------|
-| `*_height.tiff` | 32비트 높이맵 (um 단위) | 32-bit float TIFF |
-| `*_height16.tiff` | 16비트 높이맵 | 16-bit TIFF |
-| `*_laser.png` | 레이저 이미지 | RGB PNG |
-| `*_optical.png` | 광학 이미지 | RGB PNG |
-| `*_thumb*.png` | 썸네일 이미지 | RGB PNG |
-| `*_info.txt` | 측정 정보 | Text |
+| File | Description | Format |
+|------|-------------|--------|
+| `*_height.tiff` | 32-bit height map (um units) | 32-bit float TIFF |
+| `*_height16.tiff` | 16-bit height map | 16-bit TIFF |
+| `*_laser.png` | Laser image | RGB PNG |
+| `*_optical.png` | Optical image | RGB PNG |
+| `*_thumb*.png` | Thumbnail images | RGB PNG |
+| `*_info.txt` | Measurement info | Text |
 
-## Halcon에서 사용
+## Halcon Usage
 
 ```
 read_image(HeightMap, 'extracted/height/1_height.tiff')
 ```
 
-## 측정 정보 예시
+## Measurement Info Example
 
 ```
-측정 일시: 2025/12/10 12:07:27
-대물렌즈 배율: 28.1x
-줌: 1.3x
-원본 이미지 크기: 7462 x 7270
-X 피치: 271085 nm (271.085 um)
-Y 피치: 271085 nm (271.085 um)
-Z 피치: 54168 nm (54.168 um)
+Measurement Date: 2025/12/10 12:07:27
+Objective Magnification: 28.1x
+Zoom: 1.3x
+Original Image Size: 7462 x 7270
+X Pitch: 271085 nm (271.085 um)
+Y Pitch: 271085 nm (271.085 um)
+Z Pitch: 54168 nm (54.168 um)
 ```
 
-## 지원 파일
+## Supported Files
 
 - Keyence VK-X series (.vk6)
-- 내부적으로 VK4 포맷 사용
+- Uses VK4 format internally
 
-## 라이선스
+## License
 
 MIT License
